@@ -52,6 +52,10 @@ static const std::string help_intro
     "xml66 library.  Options are as follows:\nTODO\n"
 };
 
+/*--------------------------------------------------------------------------
+ * basic_test_1()
+ *--------------------------------------------------------------------------*/
+
 bool
 basic_test_1 (bool verbose)
 {
@@ -126,7 +130,7 @@ basic_test_1 (bool verbose)
                     if (! verbose)
                     {
                         std::cout
-                            << "Bank " << bankno
+                            << "   Bank " << bankno
                             << " (" << banknam << "):"
                             << " has " << progno << " programs."
                             << std::endl
@@ -156,6 +160,186 @@ basic_test_1 (bool verbose)
     }
     return result;
 }
+
+/*--------------------------------------------------------------------------
+ * basic_test_1b(): additional tests over the original test above
+ *--------------------------------------------------------------------------*/
+
+bool
+basic_test_1b (bool verbose)
+{
+    bool result { false };
+	std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
+    std::cout
+        << "Test 1b: Find devices & librarian in " << testdata_path << "."
+        << std::endl
+        ;
+
+    /*
+     * We pass false (the default value of the second parameter because
+     * otherwise we get an xml66::XMLException:
+     *
+     *      validity error : Validation failed: no DTD found !
+     */
+
+	xml66::XMLTree doc(testdata_path);  /* do not validate this XML file!   */
+
+	/*
+     * "//bank" gives as last element an empty element libxml: bug?
+     *
+     *      SharedNodeListPtr = std::shared_ptr<XMLSharedNodeList>
+     *      XMLSharedNodeList = vector<shared_ptr<XMLNode>>
+     */
+
+	xml66::SharedNodeListPtr nodeptrs { doc.find("//device[@name]") };
+    if (not_nullptr(nodeptrs))
+    {
+        std::size_t sz { nodeptrs->size() };
+        std::cout << "Found " << sz << " devices." << std::endl;
+        result = sz == 1;
+        verbose = verbose || sz <= 4;   /* allow short output even if quiet */
+        if (result)
+        {
+            for (auto i : *nodeptrs)
+            {
+                std::string devno { i->property("id")->value() };
+                std::string devnam { i->property("name")->value() };
+                std::string typenam { i->property("type")->value() };
+                if (verbose)
+                {
+                    std::cout
+                        << "    Device " << devno
+                        << " '" << devnam << "'"
+                        << " is a '" << typenam << "' device."
+                        << std::endl
+                        ;
+                }
+            }
+
+            xml66::SharedNodeListPtr libptrs { doc.find("//librarian[@name]") };
+            sz = libptrs->size();
+            std::cout << "Found " << sz << " librarian." << std::endl;
+            for (auto lib : *libptrs)
+            {
+                xml66::XMLNodePtr node { lib };
+                result = bool(lib);
+                std::string libnam { node->property("name")->value() };
+                std::string email { node->property("email")->value() };
+                std::cout
+                    << "   Librarian '" << libnam << "' (" << email << ")"
+                    << std::endl
+                    ;
+            }
+        }
+        else
+        {
+            std::cerr << "Incorrect number of devices" << std::endl;
+            result = false;
+        }
+    }
+    else
+    {
+        std::cerr << "Could not create XMLTree" << std::endl;
+        result = false;
+    }
+    return result;
+}
+
+/*--------------------------------------------------------------------------
+ * basic_test_1c(): additional tests over the original test above
+ *--------------------------------------------------------------------------*/
+
+bool
+basic_test_1c (bool verbose)
+{
+    bool result { false };
+	std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
+    std::cout
+        << "Test 1c: Find controls & instruments in " << testdata_path << "."
+        << std::endl
+        ;
+
+    /*
+     * We pass false (the default value of the second parameter because
+     * otherwise we get an xml66::XMLException:
+     *
+     *      validity error : Validation failed: no DTD found !
+     */
+
+	xml66::XMLTree doc(testdata_path);  /* do not validate this XML file!   */
+
+	/*
+     * "//bank" gives as last element an empty element libxml: bug?
+     *
+     *      SharedNodeListPtr = std::shared_ptr<XMLSharedNodeList>
+     *      XMLSharedNodeList = vector<shared_ptr<XMLNode>>
+     */
+
+	xml66::SharedNodeListPtr nodeptrs
+    {
+        doc.find("//controls/control[@name]")
+    };
+    if (not_nullptr(nodeptrs))
+    {
+        std::size_t sz { nodeptrs->size() };
+        std::cout << "Found " << sz << " controls." << std::endl;
+        result = sz == 8;
+        verbose = verbose || sz <= 8;   /* allow short output even if quiet */
+        if (result)
+        {
+            for (auto i : *nodeptrs)
+            {
+                std::string ctlnam { i->property("name")->value() };
+                std::string typenam { i->property("type")->value() };
+                std::string minval { i->property("min")->value() };
+                std::string defalt { i->property("default")->value() };
+                std::string maxval { i->property("max")->value() };
+                if (verbose)
+                {
+                    std::cout
+                        << "   Control " << " '" << ctlnam << "'"
+                        << " (" << typenam << ") "
+                        << minval << " to " << maxval
+                        << " [" << defalt << "]"
+                        << std::endl
+                        ;
+                }
+            }
+
+#if 0  // TODO
+            xml66::SharedNodeListPtr insptrs { doc.find("//instrument[@name]") };
+            sz = insptrs->size();
+            std::cout << "Found " << sz << " librarian." << std::endl;
+            for (auto lib : *libptrs)
+            {
+                xml66::XMLNodePtr node { lib };
+                result = bool(lib);
+                std::string libnam { node->property("name")->value() };
+                std::string email { node->property("email")->value() };
+                std::cout
+                    << "   Librarian '" << libnam << "' (" << email << ")"
+                    << std::endl
+                    ;
+            }
+#endif
+        }
+        else
+        {
+            std::cerr << "Incorrect number of controls" << std::endl;
+            result = false;
+        }
+    }
+    else
+    {
+        std::cerr << "Could not create XMLTree" << std::endl;
+        result = false;
+    }
+    return result;
+}
+
+/*--------------------------------------------------------------------------
+ * basic_test_2()
+ *--------------------------------------------------------------------------*/
 
 bool
 basic_test_2 (bool verbose)
@@ -193,7 +377,7 @@ basic_test_2 (bool verbose)
                     std::string prognum { node->property("id")->value() };
                     std::string prognam { node->property("name")->value() };
                     std::cout
-                        << "Program " << std::setw(3) << prognum
+                        << "   Program " << std::setw(3) << prognum
                         << ": '" << prognam << "'"
                         << std::endl
                         ;
@@ -203,6 +387,10 @@ basic_test_2 (bool verbose)
     }
     return result;
 }
+
+/*--------------------------------------------------------------------------
+ * basic_test_3()
+ *--------------------------------------------------------------------------*/
 
 bool
 basic_test_3 (bool verbose)
@@ -236,7 +424,7 @@ basic_test_3 (bool verbose)
                     std::string srcnum { node->property("id")->value() };
                     std::string srcnam { node->property("name")->value() };
                     std::cout
-                        << "Source " << std::setw(3) << srcnum
+                        << "   Source " << std::setw(3) << srcnum
                         << ": '" << srcnam << "'"
                         << std::endl
                         ;
@@ -246,6 +434,10 @@ basic_test_3 (bool verbose)
     }
     return result;
 }
+
+/*--------------------------------------------------------------------------
+ * basic_test_4()
+ *--------------------------------------------------------------------------*/
 
 bool
 basic_test_4 (bool verbose)
@@ -278,7 +470,7 @@ basic_test_4 (bool verbose)
                     std::string elemnum { node->property("id")->value() };
                     std::string elemnam { node->property("name")->value() };
                     std::cout
-                        << "Element " << std::setw(5) << elemnum
+                        << "   Element " << std::setw(5) << elemnum
                         << ": '" << elemnam << "'"
                         << std::endl
                         ;
@@ -288,6 +480,10 @@ basic_test_4 (bool verbose)
     }
     return result;
 }
+
+/*--------------------------------------------------------------------------
+ * basic_test_5()
+ *--------------------------------------------------------------------------*/
 
 bool
 basic_test_5 (bool verbose)
@@ -349,7 +545,8 @@ basic_test_5 (bool verbose)
                             if (result && verbose)
                             {
                                 std::cout
-                                    << "Patch " << std::setw(4) << pnum->value()
+                                    << "   Patch "
+                                    << std::setw(4) << pnum->value()
                                     << ": '" << pnam->value() << "'"
                                     << std::endl
                                     ;
@@ -362,6 +559,10 @@ basic_test_5 (bool verbose)
     }
     return result;
 }
+
+/*--------------------------------------------------------------------------
+ * basic_test_6()
+ *--------------------------------------------------------------------------*/
 
 bool
 basic_test_6 (bool verbose)
@@ -389,7 +590,7 @@ basic_test_6 (bool verbose)
                 if (result && verbose)
                 {
                     std::cout
-                        << "Attribute '" << node->name()
+                        << "   Attribute '" << node->name()
                         << "' = " << node->attribute_value()
                         << std::endl
                         ;
@@ -399,6 +600,10 @@ basic_test_6 (bool verbose)
     }
     return result;
 }
+
+/*--------------------------------------------------------------------------
+ * basic_test_7()
+ *--------------------------------------------------------------------------*/
 
 bool
 basic_test_7 (bool verbose)
@@ -434,8 +639,8 @@ basic_test_7 (bool verbose)
                 if (result && verbose)
                 {
                     std::cout
-                        << "Found available channel '" << node->name()
-                        << "' value: " << node->attribute_value()
+                        << "   Available channel '" << node->name()
+                        << "': " << node->attribute_value()
                         << std::endl
                         ;
                 }
@@ -470,6 +675,12 @@ main (int argc, char * argv [])
         {
             bool verbose { clip.verbose() };
             success = basic_test_1(verbose);
+            if (success)
+            {
+                success = basic_test_1b(verbose);
+                if (success)
+                    success = basic_test_1c(verbose);
+            }
             if (success)
                 success = basic_test_2(verbose);
 

@@ -1,0 +1,99 @@
+%-------------------------------------------------------------------------------
+% xpath
+%-------------------------------------------------------------------------------
+%
+% \file        xpath
+% \library     Documents
+% \author      Chris Ahlstrom
+% \date        2026-02-20
+% \update      2026-02-24
+% \version     $Revision$
+% \license     $XPC_GPL_LICENSE$
+%
+%     This document provides LaTeX documentation for the xml66 library.
+%
+%-------------------------------------------------------------------------------
+
+
+\section{XPath}
+\label{sec:xpath}
+
+   This section discusses the main points of \textsl{XPath}
+   as it applies to the partial coverage of XML supported
+   by the \textsl{Xml66} library.
+   See \cite{xpath} for more complete information.
+   An older specification is at \cite{xpath1999}.
+
+   \textsl{XPath} stands for \textsl{XML Path Language}.
+   It uses a non-XML syntax for a
+   flexible way of addressing different parts of an XML document.
+   It can also test addressed nodes within a document to determine
+   if they match a pattern.
+   \textsl{XPath} models an XML document as a tree of nodes.
+   There are different types of nodes, including \textsl{element nodes},
+   \textsl{attribute nodes}, and \textsl{text nodeso}.
+   \textsl{XPath} defines a way to compute a string-value for each
+   type of node.
+   Some types of nodes also have names.
+   XPath fully supports XML Namespaces.
+
+   The syntax of a path is somewhat complex, so we will
+   distill it into the information needed to use the
+   \textsl{Xml66} library.
+
+\subsection{Expr: expression}
+\label{subsec:xpath_expr_expression}
+
+   An \textsl{Expr} is the main syntactic construct of
+   \textsl{Xpath}.
+   It is evaluated, yielding one of these four types:
+
+   \begin{itemize}
+      \item \textbf{Node-set}.
+         An unordered collection of nodes without duplicates.
+      \item \textbf{Boolean}.
+         A true or false value.
+      \item \textbf{Number}.
+         A floating-point number.
+      \item \textbf{String}.
+         A sequence of UCS characters.
+   \end{itemize}
+
+\subsection{Context}
+\label{subsec:xpath_context}
+
+   Expression evaluation occurs in a \textsl{Context}.
+   The context consists of:
+
+   \begin{itemize}
+      \item \textbf{Node}.
+         This is the "context"node.
+      \item \textbf{Context position and size}.
+         This is a pair of non-zero positive integers.
+      \item \textbf{Set of variable bindings}.
+         These are a mapping from variable names to
+         variable values (each value is an object; see the
+         previous section).
+      \item \textbf{Function library}.
+         These are a mapping from function names to
+         functions.
+      \item \textbf{Set of namespace declarations}.
+         These consist of a mapping from prefixes to namespace URIs.
+   \end{itemize}
+
+\subsection{Location Path}
+\label{subsec:xpath_location_path}
+
+   The \textsl{Location Path} is a special case of an
+   \textsl{Expr}, and is the most important construct.
+
+\subsection{Future Work}
+\label{subsec:xpath_introduction_future}
+
+   \begin{itemize}
+      \item Hammer on this documentation.
+   \end{itemize}
+
+%-------------------------------------------------------------------------------
+% vim: ts=3 sw=3 et ft=tex
+%-------------------------------------------------------------------------------
