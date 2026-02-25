@@ -7,6 +7,12 @@
 
 build/
 .cache
+core
+tags
+TAGS
+*.t
+*.tmp
+tmp/
 /subprojects/*
 !/subprojects/*.wrap
 

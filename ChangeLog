@@ -1,2 +1,17 @@
-2026-02-20  Chris <ahlstromcj@gmail.com>
+2026-02-24  Chris <ahlstromcj@gmail.com>
+
+	* doc/latex/tex/references.tex,
+	doc/latex/tex/xml66-library-guide.tex, doc/latex/tex/xpath.tex,
+	tests/xml66_tests.cpp: Interim check-in, adding more tests and
+	documentation.
+
+2026-02-24  Chris <ahlstromcj@gmail.com>
+
+	* .gitignore, extras/git/gitignore.dot: Added gitignore files for
+	meson.
+
+2026-02-24  Chris <ahlstromcj@gmail.com>
+
+	* Created working project using existing files.
+
 

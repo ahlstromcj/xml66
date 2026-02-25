@@ -86,9 +86,294 @@
 
    The \textsl{Location Path} is a special case of an
    \textsl{Expr}, and is the most important construct.
+   It has an unabbreviated syntax and an abbreviated syntax.
+   Here a some of the former:
+
+   \begin{itemize}
+      \item \textbf{child::para}.
+         Selects the \textsl{para} element children of the context node.
+      \item \textbf{child::*}.
+         Selects all element children of the context node.
+      \item \textbf{child::text()}.
+         Selects all text node children of the context node.
+      \item \textbf{child::node()}.
+         Selects all the children of the context node,
+         whatever their node type.
+      \item \textbf{attribute::name}.
+         Selects the name attribute of the context node.
+      \item \textbf{attribute::*}.
+         Selects all the attributes of the context node.
+      \item \textbf{descendant::para}.
+         Selects the \textsl{para} element descendants of the context node.
+      \item \textbf{descendant-or-self::para}.
+         Selects the \textsl{para} element descendants of the context node
+         and, if the context node is a \textsl{para} element, the context
+         node as well.
+      \item \textbf{/}.
+         Selects the document root (which is always the parent of the
+         document element).
+   \end{itemize}
+
+   There are many more. See \cite{xpath1999}.
+   In the abbreviated syntax, \textsl{child:} can be omitted.
+   Here a some of the abbreviated syntax:
+
+   \begin{itemize}
+      \item \textbf{para}.
+         Selects the \textsl{para} element children of the context node.
+      \item \textbf{*}.
+         Selects all element children of the context node.
+      \item \textbf{text()}.
+         Selects all text node children of the context node.
+      \item \textbf{@}.
+         An abbreviation for \textsl{attribute:}.
+         Example: \textsl{para[@type="warning"]} is short for
+         \textsl{child:para[attribute::type="warning"]}.
+      \item \textbf{@name}.
+         Selects the name attribute of the context node.
+      \item \textbf{@*}.
+         Selects all the attributes of the context node.
+      \item \textbf{/doc/chapter[5]/section[2]}.
+         Selects the second \textsl{section} of the
+         fifth \textsl{chapter} of the \textsl{doc}.
+      \item \textbf{chapter//para}.
+         Selects the \textsl{para} element descendants of the
+         \textsl{chapter} element children of the context node.
+      \item \textbf{//para}.
+         Selects all of the \textsl{para} element descendants of the
+         document root, and hence selects all
+         \textsl{para} element in the same document as
+         the context node.
+      \item \textbf{descendant-or-self::para}.
+         Selects the \textsl{para} element descendants of the context node
+         and, if the context node is a \textsl{para} element, the context
+         node as well.
+      \item \textbf{/}.
+         Selects the document root (which is always the parent of the
+         document element).
+      \item \textbf{//}.
+         Short for \textsl{descendant-or-self::node()}.
+         By itself it is not a valid expression.
+         It establishes an initial node sequence containing the root
+         of the tree in which the context node is found, plus all
+         nodes descended from this root.
+         (The descendants of a node do \textsl{not} include
+         \textsl{attribute} nodes or
+         \textsl{namespace} nodes.
+         A path expression that starts with "/" or "//" selects
+         nodes starting from the context item's tree root;
+         it is an absolute path expression.
+   \end{itemize}
+
+   The examples in the next sections all use files from
+   \textsl{Ardour}'s test data.
+   By default, the \texttt{xml66\_tests} program shows minimal information
+   and the success or failure status of the run.
+   The \texttt{--verbose} option allows all the data to be shown,
+   and the output is \textsl{long}.
+
+\subsubsection{Location Path Examples: Rosegarden}
+\label{subsubsec:xpath_location_path_examples_1}
+
+   Here are some of the first items used in the \texttt{xml66\_tests} program.
+   They are used by first creating a document using an XML file,
+   and calling the "find" function.
+   In the \textsl{Rosegarden} XML document below,
+   the hierarchy of nodes is "<rosegarden-data>",
+   "<studio>", "<device>", then "<bank>".
+
+   \textbf{basic\_test\_1()}:
+
+   \begin{verbatim}
+      xml66::XMLTree doc
+      (
+         \texttt{tests/data/RosegardenPatchFile.xml}
+      );
+      xml66::SharedNodeListPtr nodeptrs
+      {
+         doc.find("//bank[@name]")
+      };
+   \end{verbatim}
+
+   "//bank[@name]" tells the parser to collect, from the top, all of the
+   "<bank>" nodes that have the attribute "name". There are 8 of them.
+   If "[@name]" is left out, then a 9th "bank" is found that does not have
+   a name.
+
+   For each bank \texttt{b} in the node list, we get the bank name
+   via \texttt{b->property("name")->value()}.
+   For each bank, we then loop through the child nodes, which are "<program>"
+   nodes, using the list \texttt{b->children()}.
+   We can get their "id" and "name" values and show them or collect them.
+
+   \textbf{basic\_test\_1b()}:
+
+   Another query using "//device[@name]" is similar.
+   For each device, we can get their "id", "name", and "type"
+   values and show them or collect them.
+
+   Other simple queries are "//librarian[@name]",
+   "//controls/control[@name]"), and
+   instrument[@name]".
+
+   \textbf{basic\_test\_1c()}:
+
+   The "//controls/control[@name]"
+   query retrieves all the "<controls>" and "<control>",
+   and the test can show the names,
+   type, and range of values for the controls.
+
+   The "//instrument[@name]" gets the "<instrument>" nodes and
+   can show their id, and and type of instrument.
+
+   \textbf{basic\_test\_2()}:
+
+   A more complex query is used in the test of the
+   \textsl{Rosegarden} file:
+
+   \begin{verbatim}
+      xml66::SharedNodeListPtr nodeptrs
+      {
+         doc.find
+         (
+            "/rosegarden-data/studio/device/bank/program[contains(@name, 'Latin')]"
+         )
+      };
+   \end{verbatim}
+
+   This absolute path navigates to the "<program>" nodes and collects
+   only the ones having a "name" attribute that contains the word
+   "Latin".
+
+\subsubsection{Location Path Examples: Ardour TestSession}
+\label{subsubsec:xpath_location_path_examples_2}
+
+   These examples use an \textsl{Ardour} file from its test data.
+
+   \textbf{basic\_test\_3()}:
+
+   \begin{verbatim}
+      xml66::XMLTree doc("tests/data/TestSession.ardour");
+      xml66::SharedNodeListPtr nodeptrs
+      {
+         doc.find
+         (
+            "/Session/Sources/Source[contains(@captured-for, 'Guitar')]"
+         )
+      };
+   \end{verbatim}
+
+   This query finds all "<Sources>" where the "captured-for"
+   attribute contains 'Guitar'."
+
+   \textbf{basic\_test\_4()}:
+
+   The "//*[@id and @name]" query uses "//" to cover the whole
+   document as the context node, "*" to select all element children,
+   and "[@id and @name]" gets the nodes that have both "id" and "name"
+   attributes.
+
+\subsubsection{Location Path Examples: Protools MIDINAM}
+\label{subsubsec:xpath_location_path_examples_3}
+
+   These examples all use the file below, from \textsl{Ardour}'s test data.
+   This is MIDINAM file, and is somewhat complex and contains some
+   redundancy that bloats the file size significantly.
+   It contains the following nodes of interest, and some not mentioned here:
+
+   \begin{itemize}
+      \item \texttt{MasterDeviceNames, Manufacturer, Model, CustomDeviceMode}.
+         Specifies human-readable data about the device.
+      \item \texttt{DeviceModeEnable} and \texttt{MIDICommands}.
+         Enables modes of a device, and can specify a system-exclusive command,
+         for example.
+      \item \texttt{ChannelNameSetAssignments} and
+         \texttt{ChannelNameSetAssign}.
+         One example is Channel="1" NameSet="Name Set 1".
+		\item \texttt{ChannelNameSet}.
+         Name="Name Set 1" is an example.
+      \item \texttt{AvailableForChannels}.
+         This node, and the rest of the ones listed below, are included in
+         a \texttt{ChannelNameSet} node.
+      \item \texttt{AvailableChannel}.
+         Channel="1" Available="true".
+      \item \texttt{PatchBank}.
+         Name="Piano".
+      \item \texttt{PatchNameList}.
+      \item \texttt{Patch}.
+         Number="001" Name="Piano 1". There is a huge number of these
+         nodes; they comprise the bulk of the data.
+      \item \texttt{PatchMIDICommands}.
+   \end{itemize}
+
+   \textbf{basic\_test\_5()}:
+
+   Here is the setup for the first query:
+
+   \begin{verbatim}
+      xml66::XMLTree doc
+      (
+         "tests/data/ProtoolsPatchFile.midnam"
+      );
+      xml66::SharedNodeListPtr nodeptrs
+      {
+         doc.find
+         (
+            "/MIDINameDocument/MasterDeviceNames/ChannelNameSet[@Name="
+            "'Name Set 1']/PatchBank"
+         )
+      };
+   \end{verbatim}
+
+   This query get banks and patches for 'Name Set 1'.
+   It starts by collecting all the "<PatchBank>" nodes.
+   For each PatchBank, the following query, where p is the PatchBank,
+   node is used.
+
+   \begin{verbatim}
+      xml66::SharedNodeListPtr nodeptrs { doc.find("//Patch[@Name]", p.get()) };
+   \end{verbatim}
+
+   This call retrieves all of the "<Patch>" nodes in the PatchBank.
+   The test program can then show them.
+
+   \textbf{basic\_test\_6()}:
+
+   The query for this test is:
+
+   \begin{verbatim}
+      xml66::SharedNodeListPtr nodeptrs { doc.find("//@Value") };
+   \end{verbatim}
+
+   This call retrieves \textsl{any} node that has an attribute
+   named "Value".
+   The program can then print the attribute name, which is always
+   "Value", and the numeric value for that attribute.
+   In the \textsl{Protools} example, 3318 values are found.
+
+   \textbf{basic\_test\_7()}:
+
+   The query for this test is:
+
+   \begin{verbatim}
+      xml66::SharedNodeListPtr nodeptrs
+      {
+         doc.find
+         (
+            "//ChannelNameSet[@Name = 'Name Set 1']"
+            "//AvailableChannel[@Available = 'true']/@Channel"
+         )
+      };
+   \end{verbatim}
+
+   where this query is one long \textsl{C++} string.
+   It gets 'Name Set 1', looks at all of the "<AvailableChannel>" nodes
+   in it, and, if the "Available" attribute is "true", retrieves
+   the value of the "Channel" attribute. In this file, channel 10
+   is marked false, and so is not counted.
 
 \subsection{Future Work}
-\label{subsec:xpath_introduction_future}
+\label{subsec:xpath_future_work}
 
    \begin{itemize}
       \item Hammer on this documentation.

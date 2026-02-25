@@ -60,7 +60,7 @@ bool
 basic_test_1 (bool verbose)
 {
     bool result { false };
-	std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
+    std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
     std::cout
         << "Test 1: Find all banks in " << testdata_path << "."
         << std::endl
@@ -73,20 +73,23 @@ basic_test_1 (bool verbose)
      *      validity error : Validation failed: no DTD found !
      */
 
-	xml66::XMLTree doc(testdata_path);  /* do not validate this XML file!   */
+    xml66::XMLTree doc(testdata_path);  /* do not validate this XML file!   */
 
-	/*
+    /*
      * "//bank" gives as last element an empty element libxml: bug?
      *
      *      SharedNodeListPtr = std::shared_ptr<XMLSharedNodeList>
      *      XMLSharedNodeList = vector<shared_ptr<XMLNode>>
+     *
+     *  Here, the find() gets all the <bank> nodes that have a "name"
+     *  attribute.
      */
 
-	xml66::SharedNodeListPtr nodeptrs { doc.find("//bank[@name]") };
+    xml66::SharedNodeListPtr nodeptrs { doc.find("//bank[@name]") };
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " banks." << std::endl;
+        std::cout << "Found " << sz << " bank(s)." << std::endl;
         result = sz == 8;
         verbose = verbose || sz <= 4;   /* allow short output even if quiet */
         if (result)
@@ -169,7 +172,7 @@ bool
 basic_test_1b (bool verbose)
 {
     bool result { false };
-	std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
+    std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
     std::cout
         << "Test 1b: Find devices & librarian in " << testdata_path << "."
         << std::endl
@@ -182,20 +185,20 @@ basic_test_1b (bool verbose)
      *      validity error : Validation failed: no DTD found !
      */
 
-	xml66::XMLTree doc(testdata_path);  /* do not validate this XML file!   */
+    xml66::XMLTree doc(testdata_path);  /* do not validate this XML file!   */
 
-	/*
+    /*
      * "//bank" gives as last element an empty element libxml: bug?
      *
      *      SharedNodeListPtr = std::shared_ptr<XMLSharedNodeList>
      *      XMLSharedNodeList = vector<shared_ptr<XMLNode>>
      */
 
-	xml66::SharedNodeListPtr nodeptrs { doc.find("//device[@name]") };
+    xml66::SharedNodeListPtr nodeptrs { doc.find("//device[@name]") };
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " devices." << std::endl;
+        std::cout << "Found " << sz << " device(s)." << std::endl;
         result = sz == 1;
         verbose = verbose || sz <= 4;   /* allow short output even if quiet */
         if (result)
@@ -218,7 +221,7 @@ basic_test_1b (bool verbose)
 
             xml66::SharedNodeListPtr libptrs { doc.find("//librarian[@name]") };
             sz = libptrs->size();
-            std::cout << "Found " << sz << " librarian." << std::endl;
+            std::cout << "Found " << sz << " librarian(s)." << std::endl;
             for (auto lib : *libptrs)
             {
                 xml66::XMLNodePtr node { lib };
@@ -253,7 +256,7 @@ bool
 basic_test_1c (bool verbose)
 {
     bool result { false };
-	std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
+    std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
     std::cout
         << "Test 1c: Find controls & instruments in " << testdata_path << "."
         << std::endl
@@ -266,36 +269,38 @@ basic_test_1c (bool verbose)
      *      validity error : Validation failed: no DTD found !
      */
 
-	xml66::XMLTree doc(testdata_path);  /* do not validate this XML file!   */
+    xml66::XMLTree doc(testdata_path);  /* do not validate this XML file!   */
 
-	/*
+    /*
      * "//bank" gives as last element an empty element libxml: bug?
      *
      *      SharedNodeListPtr = std::shared_ptr<XMLSharedNodeList>
      *      XMLSharedNodeList = vector<shared_ptr<XMLNode>>
      */
 
-	xml66::SharedNodeListPtr nodeptrs
+    xml66::SharedNodeListPtr nodeptrs
     {
         doc.find("//controls/control[@name]")
     };
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " controls." << std::endl;
+        std::cout << "Found " << sz << " control(s)." << std::endl;
         result = sz == 8;
         verbose = verbose || sz <= 8;   /* allow short output even if quiet */
         if (result)
         {
             for (auto i : *nodeptrs)
             {
-                std::string ctlnam { i->property("name")->value() };
-                std::string typenam { i->property("type")->value() };
-                std::string minval { i->property("min")->value() };
-                std::string defalt { i->property("default")->value() };
-                std::string maxval { i->property("max")->value() };
-                if (verbose)
+                xml66::XMLNodePtr node { i };
+                result = bool(i);
+                if (result && verbose)
                 {
+                    std::string ctlnam { node->property("name")->value() };
+                    std::string typenam { node->property("type")->value() };
+                    std::string minval { node->property("min")->value() };
+                    std::string defalt { node->property("default")->value() };
+                    std::string maxval { node->property("max")->value() };
                     std::cout
                         << "   Control " << " '" << ctlnam << "'"
                         << " (" << typenam << ") "
@@ -306,22 +311,32 @@ basic_test_1c (bool verbose)
                 }
             }
 
-#if 0  // TODO
-            xml66::SharedNodeListPtr insptrs { doc.find("//instrument[@name]") };
-            sz = insptrs->size();
-            std::cout << "Found " << sz << " librarian." << std::endl;
-            for (auto lib : *libptrs)
+            xml66::SharedNodeListPtr noptrs { doc.find("//instrument[@name]") };
+            sz = noptrs->size();
+            result = sz == 0;
+            if (result)
             {
-                xml66::XMLNodePtr node { lib };
-                result = bool(lib);
-                std::string libnam { node->property("name")->value() };
-                std::string email { node->property("email")->value() };
-                std::cout
-                    << "   Librarian '" << libnam << "' (" << email << ")"
-                    << std::endl
-                    ;
+                xml66::SharedNodeListPtr insptrs
+                {
+                    doc.find("//instrument[@id]")
+                };
+                verbose = verbose || sz <= 8;   /* short output even if quiet */
+                std::cout << "Found " << sz << " instrument(s)." << std::endl;
+                for (auto ins : *insptrs)
+                {
+                    xml66::XMLNodePtr node { ins };
+                    result = bool(ins);
+                    std::string insnum { node->property("id")->value() };
+                    std::string inschan { node->property("channel")->value() };
+                    std::string instype { node->property("type")->value() };
+                    std::cout
+                        << "   Instrument " << insnum
+                        << ": " << instype
+                        << " channel " << inschan
+                        << std::endl
+                        ;
+                }
             }
-#endif
         }
         else
         {
@@ -345,14 +360,14 @@ bool
 basic_test_2 (bool verbose)
 {
     bool result { false };
-	std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
+    std::string testdata_path { "tests/data/RosegardenPatchFile.xml" };
     std::cout
         << "Test 2: In " << testdata_path << ",\n"
         << "   find all programs with names containing 'Latin'."
         << std::endl
         ;
-	xml66::XMLTree doc(testdata_path);  /* the default is no validation     */
-	xml66::SharedNodeListPtr nodeptrs
+    xml66::XMLTree doc(testdata_path);  /* the default is no validation     */
+    xml66::SharedNodeListPtr nodeptrs
     {
         doc.find
         (
@@ -363,7 +378,7 @@ basic_test_2 (bool verbose)
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " banks." << std::endl;
+        std::cout << "Found " << sz << " bank(s)." << std::endl;
         result = sz == 5;
         verbose = verbose || sz <= 8;   /* allow short output even if quiet */
         if (result)
@@ -404,14 +419,14 @@ basic_test_3 (bool verbose)
         ;
 
     xml66::XMLTree doc(testsession_path);
-	xml66::SharedNodeListPtr nodeptrs
+    xml66::SharedNodeListPtr nodeptrs
     {
         doc.find("/Session/Sources/Source[contains(@captured-for, 'Guitar')]")
     };
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " sources." << std::endl;
+        std::cout << "Found " << sz << " source(s)." << std::endl;
         result = sz == 16;
         if (result)
         {
@@ -451,11 +466,11 @@ basic_test_4 (bool verbose)
         ;
 
     xml66::XMLTree doc(testsession_path);
-	xml66::SharedNodeListPtr nodeptrs { doc.find("//*[@id and @name]") };
+    xml66::SharedNodeListPtr nodeptrs { doc.find("//*[@id and @name]") };
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " elements." << std::endl;
+        std::cout << "Found " << sz << " element(s)." << std::endl;
         result = sz > 0;
         if (result)
         {
@@ -497,7 +512,7 @@ basic_test_5 (bool verbose)
         ;
 
     xml66::XMLTree doc(testmidnam_path);
-	xml66::SharedNodeListPtr nodeptrs
+    xml66::SharedNodeListPtr nodeptrs
     {
         doc.find
         (
@@ -508,7 +523,7 @@ basic_test_5 (bool verbose)
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " items." << std::endl;
+        std::cout << "Found " << sz << " item(s)." << std::endl;
         result = sz == 16;
         if (result)
         {
@@ -575,12 +590,15 @@ basic_test_6 (bool verbose)
         ;
 
     xml66::XMLTree doc(testmidnam_path);
-	xml66::SharedNodeListPtr nodeptrs { doc.find("//@Value") };
+    xml66::SharedNodeListPtr nodeptrs { doc.find("//@Value") };
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " attributes." << std::endl;
-        result = sz > 0;
+        std::cout
+            << "Found " << sz << " attribute(s) named 'Value'."
+            << std::endl
+            ;
+        result = sz == 3318;
         if (result)
         {
             for (auto i : *nodeptrs)
@@ -617,18 +635,18 @@ basic_test_7 (bool verbose)
         ;
 
     xml66::XMLTree doc(testmidnam_path);
-	xml66::SharedNodeListPtr nodeptrs
+    xml66::SharedNodeListPtr nodeptrs
     {
         doc.find
         (
-		    "//ChannelNameSet[@Name = 'Name Set 1']"
+            "//ChannelNameSet[@Name = 'Name Set 1']"
             "//AvailableChannel[@Available = 'true']/@Channel"
         )
     };
     if (not_nullptr(nodeptrs))
     {
         std::size_t sz { nodeptrs->size() };
-        std::cout << "Found " << sz << " channels." << std::endl;
+        std::cout << "Found " << sz << " channel(s)." << std::endl;
         result = sz == 15;
         if (result)
         {
