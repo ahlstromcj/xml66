@@ -51,7 +51,7 @@
  */
 
 /**
- * \file          xml66xxp.hpp
+ * \file          xml66xx.hpp
  *
  *    Provides the implementations for safe replacements for the various
  *    XML functions useful in handling MIDINAM files..
@@ -59,7 +59,7 @@
  * \library       xml66 library
  * \author        Chris Ahlstrom
  * \date          2026-02-20
- * \updates       2026-02-23
+ * \updates       2026-03-20
  * \version       $Revision$
  *
  */
@@ -156,6 +156,7 @@ private:
     XMLNode *   m_root { nullptr };
     xmlDocPtr   m_doc { nullptr };
     int         m_compression { 0 };
+    bool        m_is_valid { false };
 
 public:
 
@@ -231,6 +232,11 @@ public:
     (
         const std::string xpath, XMLNode * = nullptr
     ) const;
+
+    bool is_valid () const
+    {
+        return m_is_valid;
+    }
 
 private:
 

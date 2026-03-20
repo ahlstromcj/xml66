@@ -33,7 +33,7 @@
  * \library       xml66 library
  * \author        Chris Ahlstrom
  * \date          2026-02-20
- * \updates       2026-02-20
+ * \updates       2026-03-20
  * \version       $Revision$
  *
  */
@@ -144,14 +144,15 @@ writenode (xmlDocPtr doc, XMLNode * n, xmlNodePtr p, int root = 0)
 XMLTree::XMLTree (const std::string & fn, bool validate) :
     m_filename  (fn)
 {
-    read_internal(validate);
+    m_is_valid = read_internal(validate);
 }
 
 XMLTree::XMLTree (const XMLTree * from) :
     m_filename      (from->filename()),
     m_root          (new XMLNode(*from->root())),
     m_doc           (xmlCopyDoc(from->m_doc, 1)),
-    m_compression   (from->compression())
+    m_compression   (from->compression()),
+    m_is_valid      (from->is_valid())      /* not_nullptr(m_root) */
 {
     // no code
 }
