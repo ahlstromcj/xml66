@@ -59,7 +59,7 @@
  * \library       xml66 library
  * \author        Chris Ahlstrom
  * \date          2026-02-20
- * \updates       2026-03-20
+ * \updates       2026-03-23
  * \version       $Revision$
  *
  */
@@ -180,9 +180,9 @@ public:
         return m_filename;
     }
 
-    const std::string & set_filename (const std::string& fn)
+    void set_filename (const std::string & fn)
     {
-        return m_filename = fn;
+        m_filename = fn;
     }
 
     int compression () const
