@@ -744,9 +744,6 @@ bool
 XMLNode::set_property (const char * name, const std::string & value)
 {
     XMLPropertyIterator iter { m_proplist.begin() };
-#if 0
-    std::string const v = PBD::sanitize_utf8 (value);           // PBD
-#endif
     std::string v { value };
     std::string tmp;
     utf8::replace_invalid(v.begin(), v.end(), std::back_inserter(tmp));

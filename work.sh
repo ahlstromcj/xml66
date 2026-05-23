@@ -8,7 +8,7 @@
 # \library        xml66
 # \author         Chris Ahlstrom
 # \date           2025-01-30
-# \update         2026-05-22
+# \update         2026-05-23
 # \version        $Revision$
 # \license        $XPC_SUITE_GPL_LICENSE$
 #
@@ -27,13 +27,34 @@
 #     For the values needs for the "CROSS" "PATHS", see meson.mingw.cross.
 #     We're still working the issues for this.
 #
+# For Mingw, get the source code, cross-compile it, and install it:
+#
+#     https://gitlab.gnome.org/GNOME/libxml2/-/archive/v2.15.3/
+#        libxml2-v2.15.3.tar.gz
+#     tar -xzvf libxml2-v2.15.3.tar.gz
+#     cd libxml2-v2.15.3
+#     autogen.sh
+#     ./configure --host=x86_64-w64-mingw32 --prefix=/usr/x86_64-w64-mingw32
+#     make &> make.log
+#     sudo make install
+#
+#     /usr/x86_64-w64-mingw32/lib/libxml2.la
+#     /usr/x86_64-w64-mingw32/lib/libxml2.dll.a
+#     /usr/x86_64-w64-mingw32/lib/cmake/libxml2
+#     /usr/x86_64-w64-mingw32/lib/cmake/libxml2/libxml2-config.cmake
+#     /usr/x86_64-w64-mingw32/bin/libxml2-16.dll
+#     /usr/x86_64-w64-mingw32/include/libxml2
+#
+#     Note that the libxml2 source code also has build support for
+#     Cmake and Meson.
+#
 #------------------------------------------------------------------------------
 
 LANG=C
 export LANG
 CYGWIN=binmode
 export CYGWIN
-export XML66_SCRIPT_EDIT_DATE="2026-05-22"
+export XML66_SCRIPT_EDIT_DATE="2026-05-23"
 export XML66_LIBRARY_API_VERSION="0.1"
 export XML66_LIBRARY_VERSION="$XML66_LIBRARY_API_VERSION.0"
 export XML66="xml66"

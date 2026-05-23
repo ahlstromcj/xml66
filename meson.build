@@ -6,7 +6,7 @@
 # \library     xml66
 # \author      Chris Ahlstrom
 # \date        2026-02-20
-# \updates     2026-05-22
+# \updates     2026-05-23
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "xml66" library. It was part of the libs66
@@ -196,17 +196,20 @@ libcfg66_library_dep = dependency(
 
 libxml2_min_ver = '2.9.0'
 libxml2_req = '>= @0@'.format(libxml2_min_ver)
-libxml2_dep = dependency(
-   ['libxml-2.0', 'LibXml2'],
-   version: libxml2_req,
-   fallback: ['libxml2']
-   )
 
 '''
+libxml2_min_ver = '2.9.0'
+libxml2_req = '>= @0@'.format(libxml2_min_ver)
 libxml2_dep = dependency(
-   'libxml2', version : '>=2.9.0', required : true
+   [ 'libxml-2.0', 'LibXml2' ],
+   version: libxml2_req,
+   fallback: [ 'libxml2' ]
    )
 '''
+
+libxml2_dep = dependency(
+   'libxml-2.0', version : '>=2.9.0', required : true
+   )
 
 system_depends = [ libxml2_dep ]
 
@@ -218,13 +221,14 @@ libxml2_lib_pkgconfig = []
 # we found it by pkg-config. Then make sure we link to libxml-2.0.
 #-----------------------------------------------------------------------------
 
-if libxml2_dep.type_name() == 'pkgconfig' or libxml2_dep.type_name() == 'internal'
-   xmlxx_pc_requires += ['libxml-2.0' + libxml2_req]
+dep_type = libxml2_dep.type_name()
+if dep_type == 'pkgconfig' or dep_type == 'internal'
+   xmlxx_pc_requires += [ 'libxml-2.0' + libxml2_req ]
 else
-   libxml2_lib_pkgconfig += [libxml2_dep.get_variable(
+   libxml2_lib_pkgconfig += [ libxml2_dep.get_variable(
       cmake:         'LIBXML2_LIBRARIES',
       default_value: 'LibXml2.lib',
-  )]
+  ) ]
 endif
 
 #-----------------------------------------------------------------------------

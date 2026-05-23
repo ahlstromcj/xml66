@@ -16,6 +16,8 @@ url = https://github.com/ahlstromcj/lib66.git
 revision = head
 depth = 1
 
+# method = cmake or pkgconfg
+
 [provide]
 
 #----------------------------------------------------------------------------

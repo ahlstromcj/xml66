@@ -6,7 +6,7 @@
 # \library     xml66
 # \author      Chris Ahlstrom
 # \date        2026-05-19
-# \updates     2026-05-19
+# \updates     2026-05-23
 # \license     $XPC_SUITE_GPL_LICENSE$
 #
 #  This file is part of the "xml66" library. See the top-level meson.build
@@ -29,13 +29,21 @@ cpu_family = 'x86_64'
 cpu = 'x86_64'
 endian = 'little'
 
+[properties]
+
+cmake_toolchain_file = '/usr/x86_64-w64-mingw32/lib/cmake/libxml2/libxml2-config.cmake'
+cmake_defaults = false
+
 [binaries]
 
 c = prefix + 'gcc'
 cpp = prefix + 'g++'
 ar = prefix + 'ar'
+ld = prefix + 'ld'
+objcopy = prefix + 'objcopy'
 strip = prefix + 'strip'
 windres = prefix + 'windres'
+pkg-config = prefix + 'pkg-config'
 exe_wrapper = 'wine64'
 
 [cmake]
