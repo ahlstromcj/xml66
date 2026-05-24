@@ -20,7 +20,8 @@
 
 [constants]
 
-prefix = 'x86_64-w64-mingw32-'
+prefix = '/usr/x86_64-w64-mingw32/'
+prepended = 'x86_64-w64-mingw32-'
 
 [host_machine]
 
@@ -31,25 +32,25 @@ endian = 'little'
 
 [properties]
 
-cmake_toolchain_file = '/usr/x86_64-w64-mingw32/lib/cmake/libxml2/libxml2-config.cmake'
+cmake_toolchain_file = prefix + 'lib/cmake/libxml2/libxml2-config.cmake'
 cmake_defaults = false
 
 [binaries]
 
-c = prefix + 'gcc'
-cpp = prefix + 'g++'
-ar = prefix + 'ar'
-ld = prefix + 'ld'
-objcopy = prefix + 'objcopy'
-strip = prefix + 'strip'
-windres = prefix + 'windres'
-pkg-config = prefix + 'pkg-config'
+c = prepended + 'gcc'
+cpp = prepended + 'g++'
+ar = prepended + 'ar'
+ld = prepended + 'ld'
+objcopy = prepended + 'objcopy'
+strip = prepended + 'strip'
+windres = prepended + 'windres'
+pkg-config = prepended + 'pkg-config'
 exe_wrapper = 'wine64'
 
 [cmake]
 
-CMAKE_C_COMPILER = prefix + 'gcc'
-CMAKE_CXX_COMPILER = prefix + 'g++'
+CMAKE_C_COMPILER = prepended + 'gcc'
+CMAKE_CXX_COMPILER = prepended + 'g++'
 
 #****************************************************************************
 # meson.mingw.cross
