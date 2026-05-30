@@ -152,6 +152,8 @@ build_args += [
 # else
 #    build_args += '-DLIBPUBLIC=__attribute__((visibility("default")))'
 # endif
+#
+#-----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------
 # Set up some "HAVE" macros.  By default the header file is generated in the
@@ -166,6 +168,8 @@ cdata.set10('limits_h', cc.has_header('limits.h'))
 #-----------------------------------------------------------------------------
 # Potential sub-projects
 #-----------------------------------------------------------------------------
+
+xml_need_static =  xml66_info_lib_type == 'static'
 
 if xml66_use_potext
 
@@ -194,10 +198,10 @@ libcfg66_library_dep = dependency(
 #   Dependencies when using the libxml++ library.
 #-----------------------------------------------------------------------------
 
+'''
 libxml2_min_ver = '2.9.0'
 libxml2_req = '>= @0@'.format(libxml2_min_ver)
 
-'''
 libxml2_min_ver = '2.9.0'
 libxml2_req = '>= @0@'.format(libxml2_min_ver)
 libxml2_dep = dependency(
@@ -208,12 +212,12 @@ libxml2_dep = dependency(
 '''
 
 libxml2_dep = dependency(
-   'libxml-2.0', version : '>=2.9.0', required : true
+   'libxml-2.0', version : '>=2.9.0', required : true,
+   static : xml_need_static
    )
 
 system_depends = [ libxml2_dep ]
 
-xmlxx_pc_requires = []
 libxml2_lib_pkgconfig = []
 
 #-----------------------------------------------------------------------------
@@ -222,14 +226,11 @@ libxml2_lib_pkgconfig = []
 #-----------------------------------------------------------------------------
 
 dep_type = libxml2_dep.type_name()
-if dep_type == 'pkgconfig' or dep_type == 'internal'
-   xmlxx_pc_requires += [ 'libxml-2.0' + libxml2_req ]
-else
-   libxml2_lib_pkgconfig += [ libxml2_dep.get_variable(
-      cmake:         'LIBXML2_LIBRARIES',
-      default_value: 'LibXml2.lib',
-  ) ]
-endif
+
+libxml2_lib_pkgconfig += [ libxml2_dep.get_variable(
+   cmake:         'LIBXML2_LIBRARIES',
+   default_value: 'LibXml2.lib'
+) ]
 
 #-----------------------------------------------------------------------------
 # Sub-directories. 'tests' has to be descended into later.
@@ -374,6 +375,7 @@ summary(
       'Source Root' : xml66_info_project_root,
       'Headers Root' : libxml66_include_top,
       'Sub Dir' : xml66_project_base,
+      'Host OS' : host_machine.system(),
       'Build Type' : xml66_info_build_type,
       'Build Root' : xml66_info_build_root,
       'Library Type' : xml66_info_lib_type,
